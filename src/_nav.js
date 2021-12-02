@@ -27,7 +27,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: 'Theme',
+    name: 'MY ORGANIZATION',
   },
   {
     component: CNavItem,
@@ -43,7 +43,7 @@ const _nav = [
   },
   {
     component: CNavTitle,
-    name: 'Components',
+    name: 'TRANSCRIPT',
   },
   {
     component: CNavGroup,
