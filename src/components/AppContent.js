@@ -1,6 +1,8 @@
 import React, { Suspense } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
+import { ToastContainer } from 'react-toastify';
+ import 'react-toastify/dist/ReactToastify.min.css';
 
 // routes config
 import routes from '../routes'
@@ -8,6 +10,7 @@ import routes from '../routes'
 const AppContent = () => {
   return (
     <CContainer lg>
+      <ToastContainer />
       <Suspense fallback={<CSpinner color="primary" />}>
         <Switch>
           {routes.map((route, idx) => {

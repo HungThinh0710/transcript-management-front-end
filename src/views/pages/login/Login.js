@@ -1,5 +1,5 @@
-import { React, useState, useEffect, useRef } from 'react'
-import { Link, Redirect } from 'react-router-dom'
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   CButton,
   CCard,
@@ -12,56 +12,26 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-  CFormSelect,
-  CToast,
-  CToaster,
-  CToastBody,
-  CToastHeader,
   CFormLabel
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cibGmail, cibMailRu, cilLockLocked, cilUser } from '@coreui/icons'
-import * as API from '../../../api';
-import axios from 'axios';
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cibGmail, cibMailRu, cilLockLocked, cilUser } from "@coreui/icons";
+import * as API from "../../../api";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [wallet, setWallet] = useState("");
-  const [msgError, setMsgError] = useState("");
-  const [isLogged, setIsLogged] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [toast, addToast] = useState(0)
-  const toaster = useRef()
-
+  const history = useHistory();
   let fileReader;
-
-  const showToast = (title, msg, color) => {
-    return (
-      <CToast title="Error Toast">
-        <CToastHeader close="true">
-          <svg
-            className="rounded me-2"
-            width="20"
-            height="20"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-            role="img"
-          >
-            <rect width="100%" height="100%" fill={color}></rect>
-          </svg>
-          <strong className="me-auto">{title}</strong>
-          <small>Now</small>
-        </CToastHeader>
-        <CToastBody>{msg}</CToastBody>
-      </CToast>
-    )
-  }
 
   const validateInfo = () => {
     return email.length > 0 && password.length > 0 && wallet.length > 0;
-  }
+  };
 
   const handleFileRead = e => {
     setWallet(fileReader.result);
@@ -69,50 +39,67 @@ const Login = () => {
 
   const onUploadCredentials = e => {
     let file = e.target.files;
-    if(file.length > 0) {
+    if (file.length > 0) {
       fileReader = new FileReader();
       fileReader.onloadend = handleFileRead;
       fileReader.readAsText(file[0]);
     }
+    else toast.warning("Please select your secret key!");
   };
 
-
-  const loginSubmited = async () => {
-    setIsLoading(true);
-    addToast(showToast('Logging', "Logging, Please wait...", "primary"))
-
-    const isValid = validateInfo();
-    console.log(isValid);
-    if (isValid) {
-      console.log("OK");
-      console.log(wallet);
+  const fetchLogin = () => new Promise((resolve, reject) => {
       axios.post(API.CLIENT_LOGIN, {
         email: email,
         password: password,
-        wallet: wallet,
-      }, { withCredentials: true })
-        .then(async function (response) {
+        wallet: wallet
+      }, { withCredentials: true }) // Credentials must true for save token to cookie
+        .then(function(response) {
           setIsLoading(false);
-          if (response.status == 200) {
-            addToast(showToast('Successfully', "Login successfully, You will be move to dashboard now.", "green"))
-            // setLocalLoginStatus(true);
-            setIsLogged(true);
+          if (response.status == 200 && response.data.code == 0) {
+            resolve();
           }
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          setIsLoading(false);
+          switch (error.response.data.code) {
+            case 422:
+              reject("The given data was invalid.");
+            default:
+              reject(error.response.data.message);
+          }
         });
     }
-    else {
+  );
+
+  const loginSubmitted = () => {
+    setIsLoading(true);
+    if (validateInfo()) {
+      toast.promise(
+        fetchLogin,
+        {
+          pending: "Please waiting...",
+          success: {
+            render({ data }) {
+              return history.push("/dashboard");
+            },
+          },
+          error: {
+            render({ data }) {
+              return data;
+            },
+          }
+        },
+      );
+    } else {
       setIsLoading(false);
-      addToast(showToast("Login failed","Email or Password is required.", "red"))
+      toast.warning("Email or Password and Secret Key is required.");
     }
-  }
-  if (isLogged) return <Redirect to="/" />
+  };
+
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
-        <CToaster ref={toaster} push={toast} placement="top-end" />
+        <ToastContainer />
         <CRow className="justify-content-center">
           <CCol md={8}>
             <CCardGroup>
@@ -139,7 +126,9 @@ const Login = () => {
                       </CInputGroupText>
                       <CFormInput
                         value={password}
-                        onChange={(pwd) => { setPassword(pwd.target.value) }}
+                        onChange={(pwd) => {
+                          setPassword(pwd.target.value);
+                        }}
                         type="password"
                         placeholder="Password"
                         autoComplete="current-password"
@@ -160,7 +149,9 @@ const Login = () => {
                     <CRow>
                       <CCol xs={6}>
                         <CButton
-                          onClick={() => { loginSubmited() }}
+                          onClick={() => {
+                            loginSubmitted();
+                          }}
                           color="primary"
                           disabled={isLoading}
                           className="px-4">
@@ -176,7 +167,7 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
+              <CCard className="text-white bg-primary py-5" style={{ width: "44%" }}>
                 <CCardBody className="text-center">
                   <div>
                     <h2>Transcript Management</h2>
@@ -198,7 +189,7 @@ const Login = () => {
       </CContainer>
     </div>
 
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
