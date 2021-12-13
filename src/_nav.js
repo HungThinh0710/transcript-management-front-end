@@ -42,7 +42,7 @@ const _nav = [
       {
         component: CNavItem,
         name: "Major",
-        to: "/organization/user"
+        to: "/major/management"
       },
       {
         component: CNavItem,

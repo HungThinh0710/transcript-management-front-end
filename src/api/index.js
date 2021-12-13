@@ -17,4 +17,11 @@ export const CLIENT_UPDATE_CLASSES = API_CLIENT + 'classrooms/';
 export const CLIENT_CREATE_CLASSES = API_CLIENT + 'classrooms/';
 
 // Transcript
-export const CLIENT_GET_TRANSCRIPT = API_CLIENT + 'transcripts/get-all'
+export const CLIENT_GET_TRANSCRIPT = API_CLIENT + 'transcripts/get-all';
+
+// Major
+export const CLIENT_MAJOR_MANAGEMENT = API_CLIENT + 'majors';
+export const CLIENT_MAJOR_ASSIGN_SUBJECT = API_CLIENT + 'majors/assign';
+
+// Subject
+export const CLIENT_SUBJECT_MANAGEMENT = API_CLIENT + 'subjects';
