@@ -11,7 +11,7 @@ import {
 } from "@coreui/react";
 
 // eslint-disable-next-line react/prop-types
-const ConfirmDialog = ({ visible, onClick, onConfirm }) => {
+export const ConfirmDialog = ({ visible, onClick, onConfirm }) => {
 
   const handleClick = useCallback(() => {
     console.log("Clicked");

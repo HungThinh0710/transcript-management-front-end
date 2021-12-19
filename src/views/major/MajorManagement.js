@@ -66,6 +66,10 @@ const MajorManagement = () => {
   const [valueSubjectPicker, setValueSubjectsPicker] = useState([]);
   const [expandedRowKeys, setExpandedRowKeys] = React.useState([]);
 
+  // BETA SORT
+  const [sortColumn, setSortColumn] = React.useState();
+  const [sortType, setSortType] = React.useState();
+
   // Modal states
   const [visibleModal, setVisibleModal] = useState(false);
 

@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const FetchAPI = (method = "UNKNOWN", endpoint = "", dataPayload = {}, page = 1, perpage = 10) => new Promise((resolve, reject) => {
+const FetchAPI = (method = "UNKNOWN", endpoint = "", dataPayload = {}, page = 1, perpage = 10, params = {}) => new Promise((resolve, reject) => {
     if (method === "GET") endpoint +=`?page=${page}&perpage=${perpage}`;
     axios({
       method: method,
+      params: params,
       url: endpoint,
       data: dataPayload,
       withCredentials: true
@@ -15,9 +16,12 @@ const FetchAPI = (method = "UNKNOWN", endpoint = "", dataPayload = {}, page = 1,
         reject(response.data);
       })
       .catch((error) => {
-        reject(error.response);
+        if(error.message !== "Request aborted"){
+          reject(error.response);
+        }
       });
   }
 );
 
-export default FetchAPI;
+export { FetchAPI };
+// export default FetchAPI;

@@ -13,50 +13,51 @@ import {
   CModalFooter,
   CFormLabel,
   CForm,
-  CFormInput
+  CFormInput,
+  CFormTextarea, CBadge
 } from "@coreui/react";
-import { Table, Pagination } from "rsuite";
+import CIcon from "@coreui/icons-react";
+import { cilArrowThickToBottom, cilArrowThickFromBottom } from "@coreui/icons";
+import { Table, Pagination, TagPicker, SelectPicker } from "rsuite";
 import "rsuite/dist/rsuite.min.css";
-import axios from "axios";
-import * as API from "../../api";
+import { confirmAlert } from "react-confirm-alert"; // Import
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import ConfirmDialog from "../../components/Dialog/ConfirmDialog";
+import { FetchAPI } from "../../api/FetchAPI";
+import * as API from "../../api";
 
 const Classes = () => {
-  const [loading, setLoading] = React.useState(false);
+  // Common & table states
+  const [loadingTable, setLoadingTable] = React.useState(false);
   const [perpage, setPerpage] = React.useState(10);
   const [page, setPage] = React.useState(1);
   const [pagination, setPagination] = useState(null);
-  const [classes, setClasses] = useState([]);
-  const [visibleNewClass, setVisibleNewClass] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [payloadTable, setPayloadTable] = useState([]);
+  const [majorIdPickerSelected, setMajorIdPickerSelected] = useState(null);
+  // Modal states
+  const [visibleModal, setVisibleModal] = useState(false);
 
-  // Create & Update Class
-  const [creClassId, setCreClassId] = useState("");
-  const [creClassName, setCreClassName] = useState("");
-  const [creCode, setCreCode] = useState("");
-  const [creStartYear, setCreStartYear] = useState("");
+  // Create & update modal states
+  const [payloadModal, setPayloadModal] = useState({
+    class_id: 0,
+    major_id: 0,
+    class_name: "",
+    start_year: "",
+    code: ""
+  });
 
-  // Confirm Dialog
-  const [visibleConfirmDialog, setVisibleConfirmDialog] = useState(false);
-  const [isConfirmDialog, setIsConfirmDialog] = useState(false);
-  const [idRowForDelete, setIdRowForDelete] = useState(null);
+  // Custom State
+  const [payloadMajor, setPayloadMajor] = useState([]);
+  const [payloadNewClass, setPayloadNewClass] = useState({
+    major_id: 0,
+    class_name: "",
+    start_year: "",
+    code: ""
+  });
 
   const history = useHistory();
-  const cancelTokenSource = axios.CancelToken.source();
 
-  const handleChangePerpage = dataKey => {
-    setPerpage(dataKey);
-    fetchClasses(page, dataKey);
-  };
-
-  const onChangePage = page => {
-    setPage(page);
-    fetchClasses(page, perpage);
-  };
-
-  // eslint-disable-next-line react/prop-types
   const ActionCell = ({ rowData, dataKey, onChange, ...props }) => {
     return (
       <Table.Cell {...props} style={{ padding: "6px" }}>
@@ -64,330 +65,305 @@ const Classes = () => {
           appearance="link"
           onClick={() => {
             handleEdit(rowData);
-          }}
-        >
+          }}>
           Edit
         </CButton>
         <CButton
           color="danger"
           style={{ marginLeft: "2px" }}
           onClick={() => {
-            handleDelete(rowData);
-          }}
-        >
+            deleteRowConfirm(rowData);
+          }}>
           Delete
         </CButton>
       </Table.Cell>
     );
   };
 
+  const deleteRowConfirm = (rowData) => {
+    confirmAlert({
+      title: "Are you sure?",
+      message: "Do you want to delete this row?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: () => {
+            fetchDeletePayloadAPI({ class_id: rowData.id });
+          }
+        },
+        {
+          label: "No"
+        }
+      ]
+    });
+  };
+
+  const onChangeSelectMajor = (e) => {
+    console.log(e);
+    setMajorIdPickerSelected(e);
+  };
+
+  const onChangePage = page => {
+    setPage(page);
+    fetchTableAPI(page, perpage);
+  };
+
+  const onCloseModal = () => {
+    setPayloadModal({
+      class_id: 0,
+      major_id: 0,
+      class_name: "",
+      start_year: "",
+      code: ""
+    });
+    setVisibleModal(false);
+  };
+
+  const handleChangePerpage = dataKey => {
+    setPerpage(dataKey);
+    fetchTableAPI(page, dataKey);
+  };
+
   const handleEdit = rowData => {
-    setCreClassId(rowData.id.toString());
-    setCreClassName(rowData.class_name);
-    setCreCode(rowData.code);
-    setCreStartYear((rowData.start_year.toString()));
-    setIsUpdate(true);
-    setVisibleNewClass(!visibleNewClass);
+    setPayloadModal({
+      class_id: rowData.class_id,
+      major_id: rowData.major_id,
+      class_name: rowData.class_name,
+      code: rowData.code,
+      start_year: rowData.start_year
+    });
+    setVisibleModal(!visibleModal);
   };
 
-  const handleDelete = rowData => {
-    setIdRowForDelete(rowData.id);
-    setVisibleConfirmDialog(!visibleConfirmDialog);
+  const handleChangeTextModal = (e) => {
+    const value = e.target.value;
+    setPayloadModal({
+      ...payloadModal,
+      [e.target.name]: value
+    });
   };
 
-  const deleteRow = (id) => new Promise((resolve, reject) => {
-      axios({
-        method: "DELETE",
-        url: API.CLIENT_UPDATE_CLASSES, // TODO: Change to Delete
-        data: {
-          // class_id: null // TODO: Insert class Id here
-        },
-        withCredentials: true
-      })
-        .then(function(response) {
-          console.log(response.data.success);
-          if (response.data.success === true) {
-            resolve(response.data.message);
-          }
-        })
-        .catch((error) => {
-          // setIsLoading(false);
-          switch (error.response.data.code) {
-            case 422:
-              reject("The given data was invalid.");
-            default:
-              reject(error.response.data.message);
-          }
-        });
+  const handleChangeTextCreate = (e) => {
+    const value = e.target.value;
+    setPayloadNewClass({
+      ...payloadNewClass,
+      [e.target.name]: value
+    });
+  }
+
+  const handleCreateClass = () => {
+    if (majorIdPickerSelected === null) return toast.warning("You must select major");
+    const data = {
+      ...payloadNewClass,
+      major_id: majorIdPickerSelected,
+    };
+    fetchNewOrUpdatePayloadAPI(data);
+  };
+
+  const validateNewPayloadAPI = (isUpdate = false, dataNew = {}) => {
+    if (isUpdate){
+      return parseInt(payloadModal.class_id) > 0 && parseInt(payloadModal.major_id) > 0 && payloadModal.class_name.length > 0 && payloadModal.code.length > 0 && payloadModal.start_year.length > 0;
     }
-  );
+    return parseInt(dataNew.major_id) > 0 && dataNew.class_name.length > 0 && dataNew.code.length > 0 && dataNew.start_year.length > 0;
+  };
 
-  const createAndEditClassAPI = () => new Promise((resolve, reject) => {
-      const classAPI = API.CLIENT_UPDATE_CLASSES;
-      const method = isUpdate === true ? "PATCH" : "POST";
-
-      axios({
-        method: method,
-        url: classAPI,
-        data: {
-          class_id: creClassId,
-          class_name: creClassName,
-          code: creCode,
-          start_year: creStartYear
-        },
-        withCredentials: true
+  const fetchTableAPI = (page, perpage) => {
+    setLoadingTable(true);
+    FetchAPI("GET", API.CLIENT_GET_CLASSES, {}, page, perpage)
+      .then(payload => {
+        setLoadingTable(false);
+        setPayloadTable(payload.classes.data);
+        setPagination(payload.classes);
       })
-        .then(function(response) {
-          console.log(response.data.success);
-          if (response.data.success === true) {
-            resolve(response.data.message);
-          }
-        })
-        .catch((error) => {
-          // setIsLoading(false);
-          switch (error.response.data.code) {
-            case 422:
-              reject("The given data was invalid.");
-            default:
-              reject(error.response.data.message);
-          }
-        });
-    }
-  );
-
-  const fetchClasses = (page = 1, perpage = 10) => {
-    setClasses([]);
-    setLoading(true);
-    axios.get(`${API.CLIENT_GET_CLASSES}?page=${page}&perpage=${perpage}`, {
-      withCredentials: true,
-      cancelToken: cancelTokenSource.token
-    })
-      .then(function(response) {
-        if (response.status === 200 && response.data.success === true) {
-          const payload = response.data.classes;
-          setLoading(false);
-          setClasses(payload.data);
-          setPagination(payload);
-        }
-      })
-      .catch(function(error) {
-        setLoading(false);
+      .catch(error => {
+        setLoadingTable(false);
+        console.log("Error in here");
         console.log(error);
-        if (typeof error === "TypeError") {
-          console.log(error);
-          return;
-        }
-
-        switch (error.response.status) {
+        switch (error.status) {
           case 401:
-            console.log("NOT LOGIN YET");
-            toast.error("You are not logged in.", {
-              theme: "colored"
-            });
-            history.push("/login");
+            history.push("login");
             break;
           case 403:
-            console.log("You do not have permission to do this action");
-            toast.error(error.response.data.message, {
-              theme: "colored"
-            });
-            history.push("/dashboard");
+            history.push("dashboard");
+            toast.error(error.data.message);
             break;
           default:
-            toast.error(error.response.data.message, {
-              theme: "colored"
-            });
+            toast.error(error.data.message);
             break;
         }
       });
   };
 
-  const validateClassPayload = () => {
-    const isValid = creCode.length > 0 && creClassName.length > 0 && creStartYear.length > 0;
-    if (isUpdate && creClassId.length < 0)
-      return false;
-    return isValid === true && (parseInt(creStartYear) > 0);
-  };
+  const fetchNewOrUpdatePayloadAPI = (payload = {}) => {
+    let method, data;
+    let isPassedValidate;
 
-  const createClassSubmitted = () => {
-    if (validateClassPayload()) {
-      toast.promise(
-        createAndEditClassAPI,
-        {
-          pending: "Please waiting...",
-          success: {
-            render({ data }) {
-              fetchClasses();
-              setCreClassName("");
-              setCreStartYear("");
-              setCreCode("");
-              setIsUpdate(false);
-              setVisibleNewClass(!visibleNewClass);
-              return data;
-            }
-          },
-          error: {
-            render({ data }) {
-              return data;
-            }
+    if (parseInt(payloadModal.class_id) > 0) {
+      method = "PATCH";
+      isPassedValidate = validateNewPayloadAPI(true);
+      data = payloadModal;
+    } else {
+      isPassedValidate = validateNewPayloadAPI(false, payload);
+      method = "POST";
+      data = payload;
+    }
+
+    if (!isPassedValidate) {
+      return toast.warning("You must fill in the form.");
+    }
+    toast.promise(
+      FetchAPI(method, API.CLIENT_CREATE_CLASSES, data),
+      {
+        pending: "Please waiting...",
+        success: {
+          render({ data }) {
+            setPayloadModal({
+              class_id: 0,
+              major_id: 0,
+              class_name: "",
+              start_year: "",
+              code: ""
+            })
+            fetchTableAPI();
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            console.log(data);
+            return data.data.message;
           }
         }
-      );
-    } else
-      toast.warning("You need to fill in the form!");
+      }
+    );
+    if(method === "PATCH")
+      setVisibleModal(!visibleModal);
+  };
+
+  const fetchDeletePayloadAPI = (data) => {
+    toast.promise(
+      FetchAPI("DELETE", API.CLIENT_CREATE_CLASSES, data),
+      {
+        pending: "Please waiting...",
+        success: {
+          render({ data }) {
+            fetchTableAPI();
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            console.log("ERROR IN FETCH NEW PAYLOAD API");
+            console.log(data);
+            return data.data.message;
+          }
+        }
+      }
+    );
+  };
+
+  const fetchMajors = (page = 1, perpage = 100000000) => {
+    FetchAPI("GET", API.CLIENT_MAJOR_MANAGEMENT, {}, page, perpage)
+      .then(payload => {
+        setPayloadMajor(payload.majors.data);
+      })
+      .catch(error => {
+        console.log(error);
+        switch (error.status) {
+          default:
+            toast.error(error.data.message);
+            break;
+        }
+      });
   };
 
   useEffect(() => {
-    const cancelTokenSource = axios.CancelToken.source();
-    if (classes.length <= 0) {
-      fetchClasses(page, perpage);
-    }
-    if (isConfirmDialog && idRowForDelete != null) {
-      console.log("Confirm has been clicked");
-      console.log("ID WILL DEL: " + idRowForDelete);
-      toast.promise(
-        deleteRow(idRowForDelete),
-        {
-          pending: "Please waiting...",
-          success: {
-            render({ data }) {
-              console.log("Deleted");
-              setIsConfirmDialog(!isConfirmDialog);
-              setIdRowForDelete(null);
-              setVisibleConfirmDialog(!visibleConfirmDialog);
-              return data;
-            }
-          },
-          error: {
-            render({ data }) {
-              console.log("Delete failed");
-              setIsConfirmDialog(!isConfirmDialog);
-              setIdRowForDelete(null);
-              setVisibleConfirmDialog(!visibleConfirmDialog);
-              return data;
-            }
-          }
-        }
-      );
-      // setIsConfirmDialog(!isConfirmDialog);
-      // setIdRowForDelete(null);
-      // deleteRow(idRowForDelete);
-    } else {
-      return;
-    }
-
-    return () => cancelTokenSource.cancel();
-  }, [isConfirmDialog, idRowForDelete]);
+    fetchTableAPI(page, perpage);
+    fetchMajors();
+  }, []);
 
   return (
     <CRow>
-      <ConfirmDialog visible={visibleConfirmDialog} onClick={setVisibleConfirmDialog} onConfirm={setIsConfirmDialog} />
-      <CModal alignment="center" visible={visibleNewClass} onClose={() => setVisibleNewClass(false)}>
+      <CModal alignment="center" visible={visibleModal} onClose={onCloseModal}>
         <CModalHeader>
-          <CModalTitle>Class Form</CModalTitle>
+          <CModalTitle>Update Class</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <div className="mb-3">
-              <CFormLabel>Class Name</CFormLabel>
+              <CFormLabel>Class name</CFormLabel>
               <CFormInput
-                value={creClassName}
-                onChange={(e) => setCreClassName(e.target.value)}
+                value={payloadModal.class_name}
+                onChange={handleChangeTextModal}
                 type="text"
-                placeholder="Class name" />
-            </div>
-            <div className="mb-3">
-              <CFormLabel>Code</CFormLabel>
-              <CFormInput
-                value={creCode}
-                onChange={(e) => setCreCode(e.target.value)}
-                type="text"
-                placeholder="Code of class" />
+                name="class_name"
+                placeholder="Class" />
             </div>
             <div className="mb-3">
               <CFormLabel>Start Year</CFormLabel>
               <CFormInput
-                value={creStartYear}
-                onChange={(e) => setCreStartYear(e.target.value)}
-                type="number"
-                placeholder="Start year" />
+                value={payloadModal.start_year}
+                onChange={handleChangeTextModal}
+                type="text"
+                name="start_year"
+                placeholder="Start Year" />
+            </div>
+            <div className="mb-3">
+              <CFormLabel>Code</CFormLabel>
+              <CFormInput
+                value={payloadModal.code}
+                onChange={handleChangeTextModal}
+                type="text"
+                name="code"
+                placeholder="Major code" />
             </div>
           </CForm>
         </CModalBody>
         <CModalFooter>
-          <CButton color="secondary" onClick={() => setVisibleNewClass(false)}>
+          <CButton color="secondary" onClick={onCloseModal}>
             Close
           </CButton>
           <CButton
-            onClick={() => {
-              createClassSubmitted();
-            }}
+            onClick={() => fetchNewOrUpdatePayloadAPI()}
             color="primary">Save changes</CButton>
         </CModalFooter>
       </CModal>
-      <CCol xs={12}>
+      <CCol xs={8}>
         <CCard className="mb-4">
-          <div className="p-3">
-            <CButton
-              onClick={() => {
-                setVisibleNewClass(!visibleNewClass);
-              }}
-              color="success">New</CButton>
-          </div>
-          <CCardHeader>List classes</CCardHeader>
+          <CCardHeader>List Major</CCardHeader>
           <CCardBody>
             <Table
-              loading={loading}
+              virtualized
+              loading={loadingTable}
               height={400}
-              data={classes}
-              id="table">
+              autoHeight={true}
+              data={payloadTable}
+            >
               <Table.Column width={50} align="center">
                 <Table.HeaderCell>ID</Table.HeaderCell>
                 <Table.Cell dataKey="id" />
               </Table.Column>
-              <Table.Column width={200}>
-                <Table.HeaderCell>Major</Table.HeaderCell>
-                <Table.Cell>
-                  {
-                    rowData => {
-                      return rowData.major.major_name;
-                    }
-                  }
-                </Table.Cell>
-              </Table.Column>
-              <Table.Column width={100}>
-                <Table.HeaderCell>Major Code</Table.HeaderCell>
-                <Table.Cell>
-                  {
-                    rowData => {
-                      return rowData.major.major_code;
-                    }
-                  }
-                </Table.Cell>
-              </Table.Column>
-              <Table.Column>
+              <Table.Column width={110} fixed>
                 <Table.HeaderCell>Class Name</Table.HeaderCell>
                 <Table.Cell dataKey="class_name" />
               </Table.Column>
-              <Table.Column>
-                <Table.HeaderCell>Start Year</Table.HeaderCell>
-                <Table.Cell dataKey="start_year" />
-              </Table.Column>
-              <Table.Column>
-                <Table.HeaderCell>Code</Table.HeaderCell>
-                <Table.Cell dataKey="code" />
-              </Table.Column>
-              <Table.Column width={200} fixed>
-                <Table.HeaderCell>Transcript Total</Table.HeaderCell>
-                <Table.Cell>
+              <Table.Column width={250}>
+                <Table.HeaderCell>Major</Table.HeaderCell>
+                <Table.Cell dataKey="major">
                   {
-                    rowData => {
-                      return rowData.transcripts.length > 0 ? `${rowData.transcripts.length} transcripts` : "0";
-                    }
+                    rowData => `${rowData.major.major_name} (${rowData.major.major_code})`
                   }
                 </Table.Cell>
               </Table.Column>
-              <Table.Column width={200} fixed>
+              <Table.Column width={80}>
+                <Table.HeaderCell>Start Year</Table.HeaderCell>
+                <Table.Cell dataKey="start_year" />
+              </Table.Column>
+              <Table.Column width={80}>
+                <Table.HeaderCell>Code</Table.HeaderCell>
+                <Table.Cell dataKey="code" />
+              </Table.Column>
+              <Table.Column width={200}>
                 <Table.HeaderCell>Action</Table.HeaderCell>
                 <ActionCell dataKey="id" />
               </Table.Column>
@@ -411,6 +387,65 @@ const Classes = () => {
                 onChangeLimit={handleChangePerpage}
               />) : null}
 
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      {/*
+      * Create class
+      */}
+      <CCol xs={4}>
+        <CCard className="mb-4">
+          <CCardHeader>Create class</CCardHeader>
+          <CCardBody>
+            <div className="p-2" style={{ width: "100%" }}>
+              <CFormLabel>Class name</CFormLabel>
+              <CFormInput
+                value={payloadNewClass.class_name}
+                onChange={handleChangeTextCreate}
+                type="text"
+                size="sm"
+                name="class_name"
+                placeholder="Class name" />
+            </div>
+            <div className="p-2">
+              <CFormLabel>Select Major</CFormLabel>
+              <SelectPicker
+                block
+                style={{ width: "100%" }}
+                menuStyle={{ width: 300 }}
+                data={payloadMajor}
+                labelKey="major_name"
+                valueKey="id"
+                placeholder="Select major"
+                onChange={onChangeSelectMajor}
+                // onSelect={}
+              />
+            </div>
+            <div className="p-2" style={{ width: "100%" }}>
+              <CFormLabel>Code</CFormLabel>
+              <CFormInput
+                value={payloadNewClass.code}
+                onChange={handleChangeTextCreate}
+                type="text"
+                size="sm"
+                name="code"
+                placeholder="Code" />
+            </div>
+            <div className="p-2" style={{ width: "100%" }}>
+              <CFormLabel>Start Year</CFormLabel>
+              <CFormInput
+                value={payloadNewClass.start_year}
+                onChange={handleChangeTextCreate}
+                type="text"
+                size="sm"
+                name="start_year"
+                placeholder="Start Year" />
+            </div>
+            <div className="p-3 d-flex flex-row">
+              <CButton
+                onClick={handleCreateClass}
+                color="info">Create</CButton>
             </div>
           </CCardBody>
         </CCard>

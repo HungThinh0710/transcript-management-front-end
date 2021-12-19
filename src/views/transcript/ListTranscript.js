@@ -54,7 +54,7 @@ const renderRowExpanded = (rowData) => {
   );
 };
 
-const TranscriptManagement = () => {
+const ListTranscript = () => {
   const [loading, setLoading] = React.useState(false);
   const [perpage, setPerpage] = React.useState(10);
   const [page, setPage] = React.useState(1);
@@ -291,30 +291,14 @@ const TranscriptManagement = () => {
   }
 
   const onCheckDetailTransaction = () => {
-    toast.promise(
-      CheckDetailTransaction,
-      {
-        pending: "Please waiting...",
-        success: {
-          render({ data }) {
-            // fetchTablePayload();
-            // setCreClassName("");
-            // setCreStartYear("");
-            // setCreCode("");
-            // setIsUpdate(false);
-            // setVisibleNewClass(!visibleNewClass);
-            setPayloadResultDetail(data.payload.classes);
-            console.log(data);
-            return data.msg;
-          }
-        },
-        error: {
-          render({ data }) {
-            return data;
-          }
-        }
+    history.push({
+      pathname: '/transcript/detail',
+      search: `?trxID=${detailTrxID}&studentID=${detailStudentID}`,
+      state: {
+        trxID: detailTrxID,
+        studentID: detailStudentID
       }
-    );
+    })
   }
 
   const onTraceTransaction = () => {
@@ -410,10 +394,11 @@ const TranscriptManagement = () => {
         <CCard className="mb-4">
           <div className="p-3 d-flex flex-row">
             <CButton
+              variant={"outline"}
               onClick={() => {
-                setVisibleNewClass(!visibleNewClass);
+                history.push('/transcript/new')
               }}
-              color="success">New</CButton>
+              color="success">New Transcript</CButton>
           </div>
           <CCardHeader>List Transcript</CCardHeader>
           <CCardBody>
@@ -534,4 +519,4 @@ const TranscriptManagement = () => {
   );
 };
 
-export default TranscriptManagement;
+export default ListTranscript;

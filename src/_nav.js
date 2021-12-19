@@ -77,26 +77,30 @@ const _nav = [
     component: CNavTitle,
     name: "TRANSCRIPT"
   },
-  ,{
-    component: CNavItem,
-    name: "Transcript Management",
-    to: "/transcript/management",
-    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
-  },
   {
-
     component: CNavGroup,
-    name: "Base",
-    to: "/base",
+    name: "Transcript Management",
+    to: "/transcript/list",
     icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
     items: [
       {
         component: CNavItem,
-        name: "Accordion",
-        to: "/base/accordion"
+        name: "Transcript",
+        to: "/transcript/list"
       },
+      // {
+      //   component: CNavItem,
+      //   name: "New Transcript",
+      //   to: "/transcript/new"
+      // }
     ]
   },
+  {
+    component: CNavItem,
+    name: "Transcript Management",
+    to: "/transcript/management",
+    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
+  }
 ];
 
 export default _nav;
