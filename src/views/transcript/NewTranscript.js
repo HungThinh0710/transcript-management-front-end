@@ -83,6 +83,11 @@ const NewTranscript = () => {
     }
   };
 
+  const onChangeSelectClass = (value) => {
+      setBasicInformation({ ...basicInformation, class_id: value });
+      fetchSubjectsAPI(value); // value = class_id
+  }
+
   const handleClearAll = () => {
     setIdSubjectSelected([]);
     setChildCardDatas([]);
@@ -151,8 +156,8 @@ const NewTranscript = () => {
   };
 
   // Subjects
-  const fetchSubjectsAPI = () => {
-    FetchAPI("GET", API.CLIENT_SUBJECT_MANAGEMENT, {}, 1, 1000)
+  const fetchSubjectsAPI = (classId) => {
+    FetchAPI("GET", API.CLIENT_SUBJECT_MANAGEMENT, {}, 1, 1000, {class_id: classId})
       .then(payload => {
         setSubjects(payload.subjects.data);
       })
@@ -177,7 +182,7 @@ const NewTranscript = () => {
   useEffect(() => {
     // fetchTableAPI(page, perpage);
     fetchClassesAPI();
-    fetchSubjectsAPI();
+    // fetchSubjectsAPI();
   }, []);
 
   return (
@@ -218,9 +223,7 @@ const NewTranscript = () => {
                 valueKey="id"
                 name="class_id"
                 placeholder="Select class"
-                onChange={(e) => {
-                  setBasicInformation({ ...basicInformation, class_id: e });
-                }}
+                onChange={onChangeSelectClass}
               />
             </div>
             <div className="p-3 d-flex flex-row">
