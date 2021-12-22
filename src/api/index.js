@@ -19,7 +19,9 @@ export const CLIENT_CREATE_CLASSES = API_CLIENT + 'classrooms/';
 // Transcript
 export const CLIENT_GET_TRANSCRIPT = API_CLIENT + 'transcripts/get-all';
 export const CLIENT_GET_DETAIL_TRANSCRIPT_BY_TRXID = API_CLIENT + 'transcripts/get-by-trxid';
-export const CLIENT_SUBMIT_TRANSCRIPT = API_CLIENT + 'transcripts/submit'
+export const CLIENT_SUBMIT_TRANSCRIPT = API_CLIENT + 'transcripts/submit';
+export const CLIENT_UPDATE_TRANSCRIPT = API_CLIENT + 'transcripts/update';
+export const CLIENT_TRACE_TRANSCRIPT = API_CLIENT + 'transcripts/history';
 
 // Major
 export const CLIENT_MAJOR_MANAGEMENT = API_CLIENT + 'majors';

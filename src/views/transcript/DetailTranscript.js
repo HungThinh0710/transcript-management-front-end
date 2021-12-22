@@ -27,12 +27,11 @@ import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import { toast } from "react-toastify";
 import { FetchAPI } from "../../api/FetchAPI";
 import * as API from "../../api";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 
 import FormTranscript from "../../components/Transcript/FormTranscript";
-import { CLIENT_GET_DETAIL_TRANSCRIPT_BY_TRXID } from "../../api";
 
-const NewTranscript = () => {
+const DetailTranscript = () => {
   const [visibleCallout, setVisibleCallout] = useState(false);
   const [classrooms, setClassrooms] = useState([]);
   const [subjects, setSubjects] = useState([]);
@@ -46,6 +45,7 @@ const NewTranscript = () => {
   const location = useLocation();
   const [transaction, setTransaction] = useState([]);
   const [transcript, setTranscript] = useState([]);
+  const history = useHistory();
 
   const passSubjectToFormTranscript = (id) => {
     for (const [i, e] of subjects.entries())
@@ -75,12 +75,13 @@ const NewTranscript = () => {
   };
 
   const onChangeSelectSubject = (value, event) => {
-    if (event.type === "click" || event.currentTarget.getAttribute("class" === "rs-tag-icon-close rs-btn-close")) {
+    if (event.type === "click" && event.currentTarget.getAttribute("class") === "rs-tag-icon-close rs-btn-close") {
       const idNeedToRemove = idSubjectsSelected.filter(x => value.indexOf(x) === -1);
       removeChildCardElement(...idNeedToRemove);
       const idSelectedArr = removeAnIdSubjectSelected(...idNeedToRemove);
       setIdSubjectSelected([...idSelectedArr]);
-    } else {
+    }
+    else {
       setIdSubjectSelected(value);
     }
   };
@@ -98,11 +99,13 @@ const NewTranscript = () => {
   const handleClearSubjects = () => {
     setIdSubjectSelected([]);
     setChildCardDatas([]);
+    setTranscript([]);
   };
 
   const handleChildCardSave = (data) => {
     const childCardDatas = removeChildCardElement(data.id);
     const newData = [...childCardDatas, data];
+    console.log("All saved transcript");
     console.log(newData);
     setChildCardDatas(newData);
     toast.success(`Saved ${data.sbjName} subject.`);
@@ -132,12 +135,13 @@ const NewTranscript = () => {
   // Submit to blockchain
   const fetchSubmitTranscript = (data) => {
     toast.promise(
-      FetchAPI("POST", API.CLIENT_SUBMIT_TRANSCRIPT, data),
+      FetchAPI("PATCH", API.CLIENT_UPDATE_TRANSCRIPT, data),
       {
-        pending: "Submitting to blockchain...",
+        pending: "Updating to blockchain...",
         success: {
           render({ data }) {
-            handleClearAll();
+            // handleClearAll();
+            history.push('/transcript/list')
             return data.message;
           }
         },
@@ -230,10 +234,10 @@ const NewTranscript = () => {
 
   useEffect(() => {
     // fetchTableAPI(page, perpage);
-    // console.log(location);
-    // console.log(location.pathname); // result: '/secondpage'
-    // console.log(location.search); // result: '?query=abc'
-    // console.log(location.state); // result: 'some_value'
+    console.log(location);
+    console.log(location.pathname); // result: '/secondpage'
+    console.log(location.search); // result: '?query=abc'
+    console.log(location.state); // result: 'some_value'
 
     fetchClassesAPI();
     fetchSubjectsAPI();
@@ -306,10 +310,7 @@ const NewTranscript = () => {
                     placeholder="Select subject"
                     value={idSubjectsSelected}
                     onChange={onChangeSelectSubject}
-                    onClean={() => {
-                      console.log("CLEANED");
-                      setIdSubjectSelected([]);
-                    }}
+                    onClean={handleClearSubjects}
                     style={{ width: "100%", marginRight: "5px" }}
                   />
                 </div>
@@ -368,4 +369,4 @@ const NewTranscript = () => {
   );
 };
 
-export default NewTranscript;
+export default DetailTranscript;

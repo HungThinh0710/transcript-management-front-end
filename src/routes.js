@@ -13,9 +13,14 @@ const Classes = React.lazy(() => import("./views/classes/ListClasses"));
 const ListTranscript = React.lazy(() => import("./views/transcript/ListTranscript"));
 const NewTranscript = React.lazy(() => import('./views/transcript/NewTranscript'));
 const DetailTranscript = React.lazy(() => import('./views/transcript/DetailTranscript'));
+const DetailTranscriptTraced = React.lazy(() => import('./views/transcript/DetailTranscriptTraced'));
+const TraceTranscript = React.lazy(() => import('./views/transcript/TraceTranscript'));
 
 // Major
 const MajorManagement = React.lazy(() => import("./views/major/MajorManagement"));
+
+// Subject
+const SubjectManagement = React.lazy(() => import("./views/subject/Subject"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -29,9 +34,12 @@ const routes = [
   { path: "/transcript/list", name: "List Transcript", component: ListTranscript, exact: true },
   { path: "/transcript/new", name: "New Transcript", component: NewTranscript, exact: true },
   { path: "/transcript/detail", name: "Detail Transcript", component: DetailTranscript, exact: true },
+  { path: "/transcript/trace", name: "Trace Transcript", component: TraceTranscript, exact: true },
+  { path: "/transcript/detail-traced", name: "Detail Transcript", component: DetailTranscriptTraced, exact: true },
   { path: "/major", name: "Major", component: Dashboard, exact: true },
   { path: "/major/management", name: "Major Management", component: MajorManagement, exact: true },
-
+  { path: "/subject", name: "Subject", component: SubjectManagement, exact: true },
+  { path: "/subject/management", name: "Subject", component: SubjectManagement, exact: true },
 ];
 
 export default routes;

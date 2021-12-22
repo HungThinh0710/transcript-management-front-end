@@ -54,11 +54,11 @@ export default function FormTranscript(props) {
   };
 
   useEffect(() => {
-    if(typeof props.transcript != "undefined"){
+    if (typeof props.transcript != "undefined") {
       const transcripts = props.transcript;
-      if(transcripts.length > 0){
+      if (transcripts.length > 0) {
         for (const [i, e] of transcripts.entries())
-          if (e.id === props.id){
+          if (e.id === props.id) {
             setInputData({
               attendanceScore: parseInt(e.attendanceScore),
               exerciseScore: parseInt(e.exerciseScore),
@@ -74,12 +74,13 @@ export default function FormTranscript(props) {
     <CCol xs={4} className="pt-3">
       <CCard style={{ width: "18rem", height: "250px" }}>
         <CCardBody>
-          <CCardTitle>{typeof props.subject != "undefined" ? props.subject.subject_name : 'Unknown' }</CCardTitle>
+          <CCardTitle>{typeof props.subject != "undefined" ? props.subject.subject_name : "Unknown"}</CCardTitle>
           <div className="pb-2">
             <CRow>
               <CCol xs={6}>
                 <CFormLabel>Điểm danh</CFormLabel>
                 <CFormInput
+                  disabled={!!props.readonly}
                   value={inputData.attendanceScore}
                   onChange={handleChange}
                   onKeyPress={(event) => {
@@ -100,6 +101,7 @@ export default function FormTranscript(props) {
               <CCol xs={6}>
                 <CFormLabel>Bài tập</CFormLabel>
                 <CFormInput
+                  disabled={!!props.readonly}
                   value={inputData.exerciseScore}
                   onChange={handleChange}
                   onKeyPress={(event) => {
@@ -117,6 +119,7 @@ export default function FormTranscript(props) {
               <CCol xs={6}>
                 <CFormLabel>Giữa kỳ</CFormLabel>
                 <CFormInput
+                  disabled={!!props.readonly}
                   value={inputData.middleExamScore}
                   onChange={handleChange}
                   onKeyPress={(event) => {
@@ -132,6 +135,7 @@ export default function FormTranscript(props) {
               <CCol xs={6}>
                 <CFormLabel>Cuối kì</CFormLabel>
                 <CFormInput
+                  disabled={!!props.readonly}
                   value={inputData.FinalExamSCore}
                   onChange={handleChange}
                   onKeyPress={(event) => {
@@ -146,29 +150,35 @@ export default function FormTranscript(props) {
               </CCol>
             </CRow>
           </div>
-          <CButton
-            onClick={handleClickSave}
-            variant="outline"
-            size="sm"
-            style={{ marginRight: "5px" }}>
-            Save
-          </CButton>
-          <CButton
-            onClick={handleClickClear}
-            variant="outline"
-            size="sm"
-            style={{ marginRight: "5px" }}
-            color="dark">
-            Reset
-          </CButton>
-          <CButton
-            onClick={handleClickRemove}
-            variant="outline"
-            size="sm"
-            style={{ marginRight: "5px" }}
-            color="danger">
-            Remove
-          </CButton>
+          {
+            props.readonly !== true ? (
+              <>
+                <CButton
+                  onClick={handleClickSave}
+                  variant="outline"
+                  size="sm"
+                  style={{ marginRight: "5px" }}>
+                  Save
+                </CButton>
+                <CButton
+                  onClick={handleClickClear}
+                  variant="outline"
+                  size="sm"
+                  style={{ marginRight: "5px" }}
+                  color="dark">
+                  Reset
+                </CButton>
+                <CButton
+                  onClick={handleClickRemove}
+                  variant="outline"
+                  size="sm"
+                  style={{ marginRight: "5px" }}
+                  color="danger">
+                  Remove
+                </CButton>
+              </>) : null
+          }
+
         </CCardBody>
       </CCard>
     </CCol>

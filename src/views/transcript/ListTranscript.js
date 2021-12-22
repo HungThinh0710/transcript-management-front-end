@@ -301,8 +301,14 @@ const ListTranscript = () => {
     })
   }
 
-  const onTraceTransaction = () => {
-
+  const onCheckTraceTransaction = () => {
+    history.push({
+      pathname: '/transcript/trace',
+      search: `?studentID=${detailStudentID}`,
+      state: {
+        studentID: detailStudentID
+      }
+    })
   }
 
   useEffect(() => {
@@ -499,18 +505,11 @@ const ListTranscript = () => {
                   value={detailStudentID}
                   onChange={(e)=>{setDetailStudentID(e.target.value)}}
                 />
-                <CButton color="success" style={{ width: "30%" }}>Trace</CButton>
+                <CButton
+                  color="success"
+                  onClick={onCheckTraceTransaction}
+                  style={{ width: "30%" }}>Trace</CButton>
               </div>
-              {
-                payloadResultDetail ?
-                  (<div className="mb-3">
-                    <h4>Detail Transaction</h4>
-
-                  </div>)
-                  : null
-              }
-
-
             </CForm>
           </CCardBody>
         </CCard>

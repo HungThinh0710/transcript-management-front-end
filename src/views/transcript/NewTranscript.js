@@ -72,7 +72,7 @@ const NewTranscript = () => {
   };
 
   const onChangeSelectSubject = (value, event) => {
-    if(event.type === "click" || event.currentTarget.getAttribute("class" === "rs-tag-icon-close rs-btn-close")){
+    if(event.type === "click" && event.currentTarget.getAttribute("class" === "rs-tag-icon-close rs-btn-close")){
       const idNeedToRemove = idSubjectsSelected.filter(x => value.indexOf(x) === -1);
       removeChildCardElement(...idNeedToRemove);
       const idSelectedArr = removeAnIdSubjectSelected(...idNeedToRemove);
