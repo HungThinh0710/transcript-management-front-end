@@ -13,7 +13,7 @@ const FetchAPI = (method = "UNKNOWN", endpoint = "", dataPayload = {}, page = 1,
         if (response.data.success === true) {
           resolve(response.data);
         }
-        reject(response.data);
+        reject(response);
       })
       .catch((error) => {
         if(error.message !== "Request aborted"){

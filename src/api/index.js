@@ -10,6 +10,9 @@ export const CLIENT_CHECK_VALID_TOKEN = API_CLIENT + 'is-valid-token';
 
 // Organization
 export const CLIENT_GET_ORG_USER = API_CLIENT + 'organization/users';
+export const CLIENT_GET_ORG_SETTING = API_CLIENT + 'organization/setting';
+export const CLIENT_CHANGE_ORG_SETTING = API_CLIENT + 'organization/setting';
+
 
 // Classes
 export const CLIENT_GET_CLASSES = API_CLIENT + 'classrooms';
@@ -29,3 +32,6 @@ export const CLIENT_MAJOR_ASSIGN_SUBJECT = API_CLIENT + 'majors/assign';
 
 // Subject
 export const CLIENT_SUBJECT_MANAGEMENT = API_CLIENT + 'subjects';
+
+// Users
+export const CLIENT_GET_USER = API_CLIENT + 'users';

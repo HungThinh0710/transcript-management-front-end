@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from "react";
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
 import { ToastContainer } from 'react-toastify';
@@ -11,7 +11,7 @@ const AppContent = () => {
   return (
     <CContainer lg>
       <ToastContainer />
-      <Suspense fallback={<CSpinner color="primary" />}>
+      <Suspense fallback={<div className="text-center"><CSpinner color="primary" /></div>}>
         <Switch>
           {routes.map((route, idx) => {
             return (

@@ -97,14 +97,14 @@ const ListTranscript = () => {
   const ActionCell = ({ rowData, dataKey, onChange, ...props }) => {
     return (
       <Table.Cell {...props} style={{ padding: "6px" }}>
-        <CButton
-          appearance="link"
-          onClick={() => {
-            handleEdit(rowData);
-          }}
-        >
-          Edit
-        </CButton>
+        {/*<CButton*/}
+        {/*  appearance="link"*/}
+        {/*  onClick={() => {*/}
+        {/*    handleEdit(rowData);*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  Edit*/}
+        {/*</CButton>*/}
         <CButton
           color="danger"
           style={{ marginLeft: "2px" }}
@@ -444,11 +444,11 @@ const ListTranscript = () => {
                 <Table.HeaderCell>Student ID</Table.HeaderCell>
                 <Table.Cell dataKey="student_code" />
               </Table.Column>
-              <Table.Column>
+              <Table.Column width={250}>
                 <Table.HeaderCell>Student Name</Table.HeaderCell>
                 <Table.Cell dataKey="student_name" />
               </Table.Column>
-              <Table.Column width={200}>
+              <Table.Column width={150}>
                 <Table.HeaderCell>Action</Table.HeaderCell>
                 <ActionCell dataKey="id" />
               </Table.Column>

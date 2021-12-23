@@ -41,29 +41,32 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
+            <CNavLink href="#/organization/user">Users</CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
+            <CNavLink href="#/organization/setting">Settings</CNavLink>
+          </CNavItem>
+          <CNavItem>
+            <CNavLink href="#/transcript/list">Transcript</CNavLink>
           </CNavItem>
         </CHeaderNav>
-        <CHeaderNav>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
-            </CNavLink>
-          </CNavItem>
-        </CHeaderNav>
+        {/*<CHeaderNav>*/}
+        {/*  <CNavItem>*/}
+        {/*    <CNavLink href="#">*/}
+        {/*      <CIcon icon={cilBell} size="lg" />*/}
+        {/*    </CNavLink>*/}
+        {/*  </CNavItem>*/}
+        {/*  <CNavItem>*/}
+        {/*    <CNavLink href="#">*/}
+        {/*      <CIcon icon={cilList} size="lg" />*/}
+        {/*    </CNavLink>*/}
+        {/*  </CNavItem>*/}
+        {/*  <CNavItem>*/}
+        {/*    <CNavLink href="#">*/}
+        {/*      <CIcon icon={cilEnvelopeOpen} size="lg" />*/}
+        {/*    </CNavLink>*/}
+        {/*  </CNavItem>*/}
+        {/*</CHeaderNav>*/}
         <CHeaderNav className="ms-3">
           <AppHeaderDropdown />
         </CHeaderNav>

@@ -181,10 +181,10 @@ const Classes = () => {
         console.log(error);
         switch (error.status) {
           case 401:
-            history.push("login");
+            history.push("/login");
             break;
           case 403:
-            history.push("dashboard");
+            history.push("/dashboard");
             toast.error(error.data.message);
             break;
           default:
@@ -330,7 +330,7 @@ const Classes = () => {
       </CModal>
       <CCol xs={8}>
         <CCard className="mb-4">
-          <CCardHeader>List Major</CCardHeader>
+          <CCardHeader>List Class</CCardHeader>
           <CCardBody>
             <Table
               virtualized

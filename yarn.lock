@@ -1733,6 +1733,7 @@ __metadata:
     classnames: ^2.3.1
     core-js: ^3.19.1
     enzyme: ^3.11.0
+    js-cookie: ^3.0.1
     prop-types: ^15.7.2
     react: ^17.0.2
     react-app-polyfill: ^2.0.0
@@ -9544,6 +9545,13 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: e0d3efff0dc2a31c453a3f7d87586e5d6c0f008c9b827bb9204edde09288f922ddfb3a8917480bf68f4ac0298be28637daef98ebaaac65ea23d3cb754a6620c4
+  languageName: node
+  linkType: hard
+
+"js-cookie@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "js-cookie@npm:3.0.1"
+  checksum: bb48de67e2a6bd1ae3dfd6b2d5a167c33dd0c5a37e909206161eb0358c98f17cb55acd55827a58e9eea3630d89444e7479f7938ef4420dda443218b8c434a4c3
   languageName: node
   linkType: hard
 

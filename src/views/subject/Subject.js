@@ -174,10 +174,10 @@ const Subject = () => {
         console.log(error);
         switch (error.status) {
           case 401:
-            history.push("login");
+            history.push("/login");
             break;
           case 403:
-            history.push("dashboard");
+            history.push("/dashboard");
             toast.error(error.data.message);
             break;
           default:
