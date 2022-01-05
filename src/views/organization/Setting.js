@@ -4,7 +4,7 @@ import {
   CCardBody,
   CCol,
   CCardHeader,
-  CRow, CFormSwitch
+  CRow, CFormSwitch, CSpinner
 } from "@coreui/react";
 import * as API from "../../api";
 import { Redirect, useHistory } from "react-router-dom";
@@ -16,12 +16,13 @@ const Setting = () => {
     is_direct_submit_transcript: false,
     is_activate_email_domain: false
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   const convertSettingToNumber = (status) => {
-    if(status === 0)
-      return 1
+    if (status === 0)
+      return 1;
     else
-      return 0
+      return 0;
   };
 
   const onChangeSwitch = (e) => {
@@ -73,10 +74,12 @@ const Setting = () => {
           is_direct_submit_transcript: settings.is_direct_submit_transcript,
           is_activate_email_domain: settings.is_activate_email_domain
         });
+        setIsLoading(false);
 
       })
       .catch(error => {
         console.log(error);
+        setIsLoading(false);
         toast.error(error.data.message);
       });
   };
@@ -90,21 +93,35 @@ const Setting = () => {
         <CCard className="mb-4">
           <CCardHeader>Setting</CCardHeader>
           <CCardBody>
-            <CFormSwitch
-              id="directSubmit"
-              checked={payloadSetting.is_direct_submit_transcript}
-              onChange={onChangeSwitch}
-              label="Direct submit Transcript to Blockchain" />
-            <CFormSwitch
-              id="activeEmailDomain"
-              checked={payloadSetting.is_activate_email_domain}
-              onChange={onChangeSwitch}
-              label="Activate email domain" />
+            {
+              isLoading ? (
+                <>
+                  <div className="text-center">
+                    <CSpinner
+                      color="info"
+                    /> <p>Loading Setting...</p>
+                  </div>
+                </>) :
+                (<>
+                  <CFormSwitch
+                    id="directSubmit"
+                    checked={payloadSetting.is_direct_submit_transcript}
+                    onChange={onChangeSwitch}
+                    label="Direct submit Transcript to Blockchain" />
+                  <CFormSwitch
+                    id="activeEmailDomain"
+                    checked={payloadSetting.is_activate_email_domain}
+                    onChange={onChangeSwitch}
+                    label="Activate email domain" />
+                </>)
+            }
+
           </CCardBody>
         </CCard>
+
+
       </CCol>
     </CRow>
   );
 };
-
 export default Setting;

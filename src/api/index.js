@@ -35,3 +35,6 @@ export const CLIENT_SUBJECT_MANAGEMENT = API_CLIENT + 'subjects';
 
 // Users
 export const CLIENT_GET_USER = API_CLIENT + 'users';
+
+// Roles
+export const CLIENT_GET_ORGANIZATION_ROLE = API_CLIENT + 'roles';

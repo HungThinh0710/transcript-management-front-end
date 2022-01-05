@@ -381,7 +381,7 @@ const Subject = () => {
                 type="text"
                 size="sm"
                 name="subject_name"
-                placeholder="Class name" />
+                placeholder="Subject name" />
             </div>
             <div className="p-2" style={{ width: "100%" }}>
               <CFormLabel>Subject code</CFormLabel>

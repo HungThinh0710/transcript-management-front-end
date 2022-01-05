@@ -22,17 +22,22 @@ const MajorManagement = React.lazy(() => import("./views/major/MajorManagement")
 // Subject
 const SubjectManagement = React.lazy(() => import("./views/subject/Subject"));
 
+// Role & Permission
+const RoleAndPermisionManagement = React.lazy(()=> import('./views/rolesandpermission/RoleAndPermissionManagement'));
+
 const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
+
+  // My Organization Section
 
   { path: "/organization", name: "Organization", component: Dashboard, exact: true },
   { path: "/organization/information", name: "Organization Information", component: Dashboard, exact: true },
   { path: "/organization/user", name: "Organization Users", component: OrganizationUsers, exact: true },
   { path: "/organization/setting", name: "Organization Setting", component: OrganizationSetting, exact: true },
+  { path: "/organization/role-permission", name: "Organization Role & Permission", component: RoleAndPermisionManagement, exact: true },
 
-  { path: "/classes", name: "Classes", component: Dashboard, exact: true },
-  { path: "/classes/list", name: "List Classes", component: Classes, exact: true },
+  // Transcript & Related Section
 
   { path: "/transcript", name: "Transcript", component: ListTranscript, exact: true },
   { path: "/transcript/list", name: "List Transcript", component: ListTranscript, exact: true },
@@ -45,7 +50,12 @@ const routes = [
   { path: "/major/management", name: "Major Management", component: MajorManagement, exact: true },
 
   { path: "/subject", name: "Subject", component: SubjectManagement, exact: true },
-  { path: "/subject/management", name: "Subject", component: SubjectManagement, exact: true }
+  { path: "/subject/management", name: "Subject", component: SubjectManagement, exact: true },
+
+  { path: "/classes", name: "Classes", component: Dashboard, exact: true },
+  { path: "/classes/list", name: "List Classes", component: Classes, exact: true },
+
+
 ];
 
 export default routes;

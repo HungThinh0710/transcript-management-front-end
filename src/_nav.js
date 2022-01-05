@@ -54,7 +54,7 @@ const _nav = [
       {
         component: CNavItem,
         name: "Roles & Permission",
-        to: "/base/carousels",
+        to: "/organization/role-permission",
         icon: <CIcon icon={cilBalanceScale} customClassName="nav-icon" />
       },
       {

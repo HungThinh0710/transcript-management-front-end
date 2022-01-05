@@ -398,13 +398,21 @@ const ListTranscript = () => {
       </CModal>
       <CCol xs={8}>
         <CCard className="mb-4">
-          <div className="p-3 d-flex flex-row">
+          <div className="d-flex flex-row">
             <CButton
+              className="m-lg-1"
               variant={"outline"}
               onClick={() => {
                 history.push('/transcript/new')
               }}
               color="success">New Transcript</CButton>
+            <CButton
+              className="m-lg-1"
+              variant={"outline"}
+              onClick={() => {
+                history.push('/transcript/new')
+              }}
+              color="warning">Pending list</CButton>
           </div>
           <CCardHeader>List Transcript</CCardHeader>
           <CCardBody>
