@@ -1,12 +1,8 @@
 import React from "react";
 import CIcon from "@coreui/icons-react";
 import {
-  cilPencil,
-  cilPuzzle,
-  cilSpeedometer,
   cilBuilding,
   cilGroup,
-  cilDescription,
   cilBriefcase,
   cilBook,
   cilWindow,
@@ -19,16 +15,6 @@ import {
 import { CNavGroup, CNavItem, CNavTitle } from "@coreui/react";
 
 const _nav = [
-  {
-    component: CNavItem,
-    name: "Dashboard",
-    to: "/dashboard",
-    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
-    badge: {
-      color: "info",
-      text: "NEW"
-    }
-  },
   {
     component: CNavTitle,
     name: "MY ORGANIZATION"
@@ -66,50 +52,14 @@ const _nav = [
       {
         component: CNavItem,
         name: "API",
-        to: "/organization/setting",
+        to: "/organization/integration",
         icon: <CIcon icon={cilCode} customClassName="nav-icon" />
       }
     ]
   },
-  // {
-  //   component: CNavItem,
-  //   name: "Typography",
-  //   to: "/theme/typography",
-  //   icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
-  // },
   {
     component: CNavTitle,
     name: "TRANSCRIPT & RELATED"
-  },
-  // {
-  //   component: CNavGroup,
-  //   name: "Transcript Management",
-  //   to: "/transcript/list",
-  //   icon: <CIcon icon={cilPuzzle} customClassName="nav-icon" />,
-  //   items: [
-  //     {
-  //       component: CNavItem,
-  //       name: "Transcript",
-  //       to: "/transcript/list"
-  //     },
-  //     // {
-  //     //   component: CNavItem,
-  //     //   name: "New Transcript",
-  //     //   to: "/transcript/new"
-  //     // }
-  //   ]
-  // },
-  {
-    component: CNavItem,
-    name: "Transcript Management",
-    to: "/transcript/list",
-    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />
-  },
-  {
-    component: CNavItem,
-    name: "Major",
-    to: "/major/management",
-    icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />
   },
   {
     component: CNavItem,
@@ -119,9 +69,21 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: "Major",
+    to: "/major/management",
+    icon: <CIcon icon={cilBriefcase} customClassName="nav-icon" />
+  },
+  {
+    component: CNavItem,
     name: "Classes",
     to: "/classes/list",
     icon: <CIcon icon={cilWindow} customClassName="nav-icon" />
+  },
+  {
+    component: CNavItem,
+    name: "Transcript Management",
+    to: "/transcript/list",
+    icon: <CIcon icon={cilSpreadsheet} customClassName="nav-icon" />
   },
 ];
 

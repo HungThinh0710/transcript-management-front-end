@@ -1,7 +1,7 @@
 // const DOMAIN = 'https://api.transcript.hungthinhit.com';
 const DOMAIN = 'http://127.0.0.1:8080' // Localhost Only | DO NOT USE FOR PRODUCTION !!
 const VERSION_API = '/api/';
-const API_CLIENT = DOMAIN + VERSION_API + 'client/';
+const API_CLIENT = DOMAIN + VERSION_API + 'v1/client/';
 const API_ADMIN = DOMAIN + VERSION_API + 'admin/';
 
 export const CLIENT_LOGIN = API_CLIENT + 'auth/login';
@@ -10,6 +10,7 @@ export const CLIENT_CHECK_VALID_TOKEN = API_CLIENT + 'is-valid-token';
 
 // Organization
 export const CLIENT_GET_ORG_USER = API_CLIENT + 'organization/users';
+export const CLIENT_CHANGE_USER_INFORMATION = API_CLIENT + 'organization/update-user';
 export const CLIENT_GET_ORG_SETTING = API_CLIENT + 'organization/setting';
 export const CLIENT_CHANGE_ORG_SETTING = API_CLIENT + 'organization/setting';
 
@@ -38,3 +39,10 @@ export const CLIENT_GET_USER = API_CLIENT + 'users';
 
 // Roles
 export const CLIENT_GET_ORGANIZATION_ROLE = API_CLIENT + 'roles';
+export const CLIENT_CREATE_ORGANIZATION_ROLE = API_CLIENT + 'roles';
+export const CLIENT_DELETE_ORGANIZATION_ROLE = API_CLIENT + 'roles';
+export const CLIENT_SYNC_ORGANIZATION_ROLE = API_CLIENT + 'roles/sync';
+export const CLIENT_SYNC_ALL_PERMISSION_ORGANIZATION_ROLE = API_CLIENT + 'roles/sync-all-permissions';
+
+// Enroll
+export const CLIENT_ENROLL_USER = API_CLIENT + 'enroll/user';

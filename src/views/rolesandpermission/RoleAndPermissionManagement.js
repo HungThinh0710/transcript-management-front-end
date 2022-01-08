@@ -24,9 +24,7 @@ import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MajorAPI } from "../../api/major";
 import * as API from "../../api";
-import { CLIENT_GET_ORGANIZATION_ROLE, CLIENT_MAJOR_ASSIGN_SUBJECT } from "../../api";
 import { FetchAPI } from "../../api/FetchAPI";
 
 const rowKey = "id";
@@ -79,9 +77,7 @@ const RoleAndPermissionManagement = () => {
 
   // Create & update modal states
   const [payloadModal, setPayloadModal] = useState({
-    major_id: 0,
-    major_name: "",
-    major_code: ""
+    name: "",
   });
 
   const history = useHistory();
@@ -89,13 +85,6 @@ const RoleAndPermissionManagement = () => {
   const ActionCell = ({ rowData, dataKey, onChange, ...props }) => {
     return (
       <Table.Cell {...props} style={{ padding: "6px" }}>
-        <CButton
-          appearance="link"
-          onClick={() => {
-            handleEdit(rowData);
-          }}>
-          Edit
-        </CButton>
         <CButton
           color="danger"
           style={{ marginLeft: "2px" }}
@@ -116,7 +105,7 @@ const RoleAndPermissionManagement = () => {
         {
           label: "Yes",
           onClick: () => {
-            fetchDeletePayloadAPI({ major_id: rowData.id });
+            fetchDeletePayloadAPI({ role_id: rowData.id });
           }
         },
         {
@@ -126,14 +115,13 @@ const RoleAndPermissionManagement = () => {
     });
   };
 
-  const onSelectRoleRow = (e) => {
+  const onSelectRoleRow = (e, isUpdate = false) => {
     setRoleSelected(e.id);
     setValuePermissionPicker([]);
     setRoleIdPickerSelected(e.id);
     setRoleName(e.name);
     const selectedRoleId = e.id;
     let permissionAlreadyExistInRoleTmp = [];
-
     payloadTable.map(e => {
       if (e.id === selectedRoleId) {
         permissionAlreadyExistInRoleTmp.push(...e.permissions);
@@ -142,7 +130,7 @@ const RoleAndPermissionManagement = () => {
 
     const permissionAlreadyExistInRole = [];
     permissionAlreadyExistInRoleTmp.map(e => {
-      permissionAlreadyExistInRole.push(e.id)
+      permissionAlreadyExistInRole.push(e.id);
     });
     setValuePermissionPicker(permissionAlreadyExistInRole);
   };
@@ -154,9 +142,7 @@ const RoleAndPermissionManagement = () => {
 
   const onCloseModal = () => {
     setPayloadModal({
-      major_id: "",
-      major_name: "",
-      major_code: ""
+      name: "",
     });
     setVisibleModal(false);
   };
@@ -164,15 +150,6 @@ const RoleAndPermissionManagement = () => {
   const handleChangePerpage = dataKey => {
     setPerpage(dataKey);
     fetchTableAPI(page, dataKey);
-  };
-
-  const handleEdit = rowData => {
-    setPayloadModal({
-      major_id: rowData.id,
-      major_name: rowData.major_name,
-      major_code: rowData.major_code
-    });
-    setVisibleModal(!visibleModal);
   };
 
   const handleExpanded = (rowData, dataKey) => {
@@ -198,21 +175,20 @@ const RoleAndPermissionManagement = () => {
       ...payloadModal,
       [e.target.name]: value
     });
+    console.log(payloadModal);
   };
 
   const handleUpdatePermission = () => {
     if (roleIdPickerSelected === null) return toast.warning("You must select at least one permission");
     const data = {
       role_id: roleIdPickerSelected,
-      permission: valuePermissionPicker == null ? [] : valuePermissionPicker
+      permissions: valuePermissionPicker == null ? [] : valuePermissionPicker
     };
     fetchUpdatePermissionToRole(data);
   };
 
-  const validateNewPayloadAPI = (isUpdate = false) => {
-    if (isUpdate)
-      return payloadModal.major_code.length > 0 && payloadModal.major_name.length > 0 && parseInt(payloadModal.major_id) > 0;
-    return payloadModal.major_code.length > 0 && payloadModal.major_name.length > 0;
+  const validateNewPayloadAPI = () => {
+    return payloadModal.name.length > 0;
   };
 
   const fetchTableAPI = (page, perpage) => {
@@ -243,44 +219,103 @@ const RoleAndPermissionManagement = () => {
             break;
         }
       });
-    // Sample
   };
 
   const fetchNewOrUpdatePayloadAPI = () => {
-    let method;
     let isPassedValidate = false;
-
-    if (parseInt(payloadModal.major_id) > 0) {
-      method = "PATCH";
-      isPassedValidate = validateNewPayloadAPI(true);
-    } else {
-      isPassedValidate = validateNewPayloadAPI();
-      method = "POST";
-    }
-
+    isPassedValidate = validateNewPayloadAPI();
     if (!isPassedValidate) {
-      return toast.warning("You must fill in the form.");
+      return toast.warning("You must fill role name.");
     }
 
     toast.promise(
-
+      FetchAPI("POST", API.CLIENT_CREATE_ORGANIZATION_ROLE, {name: payloadModal.name}),
+      {
+        pending: "Please waiting...",
+        success: {
+          render({ data }) {
+            fetchTableAPI(page, perpage);
+            setVisibleModal(!visibleModal);
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            return data.data.message;
+          }
+        }
+      }
     );
-    setVisibleModal(!visibleModal);
   };
 
   const fetchDeletePayloadAPI = (data) => {
     toast.promise(
-
+      FetchAPI("DELETE", API.CLIENT_DELETE_ORGANIZATION_ROLE, data),
+      {
+        pending: "Please waiting...",
+        success: {
+          render({ data }) {
+            fetchTableAPI(page, perpage);
+            setRoleName("");
+            setValuePermissionPicker([]);
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            return data.data.message;
+          }
+        }
+      }
     );
-  };
-
-  const fetchAllSubject = (page = 1, perpage = 100000000) => {
-
   };
 
   const fetchUpdatePermissionToRole = (data) => {
     toast.promise(
+      FetchAPI("POST", API.CLIENT_SYNC_ORGANIZATION_ROLE, data),
+      {
+        pending: "Syncing permissions...",
+        success: {
+          render({ data }) {
+            fetchTableAPI(page, perpage);
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            // console.log("ERROR IN FETCH NEW PAYLOAD API");
+            // console.log(data);
+            return data.data.message;
+          }
+        }
+      }
+    );
+  };
 
+  const fetchGiveAllPermissionToRole = () => {
+    const data = {
+      role_id: roleIdPickerSelected
+    };
+    toast.promise(
+      FetchAPI("POST", API.CLIENT_SYNC_ALL_PERMISSION_ORGANIZATION_ROLE, data),
+      {
+        pending: "Syncing permissions...",
+        success: {
+          render({ data }) {
+            fetchTableAPI(page, perpage);
+            setRoleName("");
+            setValuePermissionPicker([]);
+            return data.message;
+          }
+        },
+        error: {
+          render({ data }) {
+            // console.log("ERROR IN FETCH NEW PAYLOAD API");
+            // console.log(data);
+            return data.data.message;
+          }
+        }
+      }
     );
   };
 
@@ -294,27 +329,18 @@ const RoleAndPermissionManagement = () => {
     <CRow>
       <CModal alignment="center" visible={visibleModal} onClose={onCloseModal}>
         <CModalHeader>
-          <CModalTitle>Major Form</CModalTitle>
+          <CModalTitle>Create role</CModalTitle>
         </CModalHeader>
         <CModalBody>
           <CForm>
             <div className="mb-3">
-              <CFormLabel>Major name</CFormLabel>
+              <CFormLabel>Role name</CFormLabel>
               <CFormInput
-                value={payloadModal.major_name}
+                value={payloadModal.name}
                 onChange={handleChangeTextModal}
                 type="text"
-                name="major_name"
-                placeholder="Major" />
-            </div>
-            <div className="mb-3">
-              <CFormLabel>Major Code</CFormLabel>
-              <CFormInput
-                value={payloadModal.major_code}
-                onChange={handleChangeTextModal}
-                type="text"
-                name="major_code"
-                placeholder="Major code" />
+                name="name"
+                placeholder="Role Name" />
             </div>
           </CForm>
         </CModalBody>
@@ -324,7 +350,7 @@ const RoleAndPermissionManagement = () => {
           </CButton>
           <CButton
             onClick={() => fetchNewOrUpdatePayloadAPI()}
-            color="primary">Save changes</CButton>
+            color="primary">Submit</CButton>
         </CModalFooter>
       </CModal>
       <CCol xs={7}>
@@ -389,9 +415,6 @@ const RoleAndPermissionManagement = () => {
           </CCardBody>
         </CCard>
       </CCol>
-      {/*
-      * Assign Subjects
-      */}
       <CCol xs={5}>
         <CCard className="mb-4">
           <CCardHeader>Assign Permissions for Role</CCardHeader>
@@ -399,7 +422,6 @@ const RoleAndPermissionManagement = () => {
             <div className="p-2">
               <CFormLabel>Your selected role</CFormLabel>
               <CFormInput
-                block
                 style={{ width: "100%" }}
                 menuStyle={{ width: 300 }}
                 value={roleName}
@@ -407,9 +429,8 @@ const RoleAndPermissionManagement = () => {
               />
             </div>
             <div className="p-2" style={{ width: "100%" }}>
-              <CFormLabel>Assign Permissions</CFormLabel>
+              <CFormLabel>Select permissions</CFormLabel>
               <TagPicker
-                block
                 data={permissionList}
                 labelKey="name"
                 valueKey="id"
@@ -427,11 +448,11 @@ const RoleAndPermissionManagement = () => {
                 className="m-lg-1"
                 variant="outline"
                 onClick={handleUpdatePermission}
-                color="info">Update</CButton>
+                color="info">Sync</CButton>
               <CButton
                 className="m-lg-1"
                 variant="outline"
-                onClick={handleUpdatePermission}
+                onClick={fetchGiveAllPermissionToRole}
                 color="danger">Assign Full Permission</CButton>
             </div>
           </CCardBody>

@@ -5,7 +5,9 @@ const Dashboard = React.lazy(() => import("./views/dashboard/Dashboard"));
 // Organization
 // const OrganizationInformation = React.lazy(() => import('./views/organization/information'))
 const OrganizationUsers = React.lazy(() => import("./views/organization/Users"));
-const OrganizationSetting = React.lazy(() => import('./views/organization/Setting'));
+const OrganizationSetting = React.lazy(() => import("./views/organization/Setting"));
+const OrganizationIntegration = React.lazy(() => import("./views/organization/Integration"));
+
 // Classes
 const Classes = React.lazy(() => import("./views/classes/ListClasses"));
 
@@ -23,7 +25,7 @@ const MajorManagement = React.lazy(() => import("./views/major/MajorManagement")
 const SubjectManagement = React.lazy(() => import("./views/subject/Subject"));
 
 // Role & Permission
-const RoleAndPermisionManagement = React.lazy(()=> import('./views/rolesandpermission/RoleAndPermissionManagement'));
+const RoleAndPermisionManagement = React.lazy(() => import("./views/rolesandpermission/RoleAndPermissionManagement"));
 
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -35,12 +37,18 @@ const routes = [
   { path: "/organization/information", name: "Organization Information", component: Dashboard, exact: true },
   { path: "/organization/user", name: "Organization Users", component: OrganizationUsers, exact: true },
   { path: "/organization/setting", name: "Organization Setting", component: OrganizationSetting, exact: true },
-  { path: "/organization/role-permission", name: "Organization Role & Permission", component: RoleAndPermisionManagement, exact: true },
+  {
+    path: "/organization/role-permission",
+    name: "Organization Role & Permission",
+    component: RoleAndPermisionManagement,
+    exact: true
+  },
+  { path: "/organization/integration", name: "API Integration", component: OrganizationIntegration, exact: true },
 
   // Transcript & Related Section
 
   { path: "/transcript", name: "Transcript", component: ListTranscript, exact: true },
-  { path: "/transcript/list", name: "List Transcript", component: ListTranscript, exact: true },
+  { path: "/transcript/list", name: "Transcript List", component: ListTranscript, exact: true },
   { path: "/transcript/new", name: "New Transcript", component: NewTranscript, exact: true },
   { path: "/transcript/detail", name: "Detail Transcript", component: DetailTranscript, exact: true },
   { path: "/transcript/trace", name: "Trace Transcript", component: TraceTranscript, exact: true },
@@ -53,7 +61,7 @@ const routes = [
   { path: "/subject/management", name: "Subject", component: SubjectManagement, exact: true },
 
   { path: "/classes", name: "Classes", component: Dashboard, exact: true },
-  { path: "/classes/list", name: "List Classes", component: Classes, exact: true },
+  { path: "/classes/list", name: "List Classes", component: Classes, exact: true }
 
 
 ];
